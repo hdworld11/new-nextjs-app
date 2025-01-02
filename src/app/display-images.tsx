@@ -21,9 +21,7 @@ export const DefaultStorageImageExample = () => {
             path: 'picture-submissions/',
             options: {
                 listAll: true,
-                bucket: 'myFirstBucket',
-                subpathStrategy:'exclude',
-            }
+                bucket: 'myFirstBucket',            }
         })
         .then(result => {
             console.log(result);
