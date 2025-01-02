@@ -11,7 +11,7 @@ import { DefaultStorageImageExample } from "./display-images";
 
 Amplify.configure(outputs);
 
-export default function App({ Component, pageProps }: AppProps): JSX.Element {
+export default function App(): JSX.Element {
   return (
     <Authenticator>
       {({ signOut, user }) => (
