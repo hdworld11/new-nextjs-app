@@ -26,30 +26,51 @@ const originAccessIdentity = new cloudfront.OriginAccessIdentity(
 
 backend.myFirstBucket.resources.bucket.grantRead(originAccessIdentity);
 
-
-const existingDistribution = cloudfront.Distribution.fromDistributionAttributes(
+const distro = new cloudfront.Distribution(
   myFirstBucketS3Instance.stack,
-  'importedDistribution',
+  "Distribution",
   {
-    distributionId:'E3C3W1NA2C76C5',
-    domainName:'d2xe9ks3dmropp.cloudfront.net',
+    defaultBehavior: {
+      origin: new S3Origin(myFirstBucketS3Instance, {
+        originAccessIdentity,
+      }),
+    },
   }
 );
 
-const cfnDistribution = existingDistribution.node.defaultChild as cloudfront.CfnDistribution;
+backend.addOutput({
+  custom: {
+    cf: cdk.Lazy.string({ produce: () => distro.distributionDomainName }),
+  },
+});
 
-cfnDistribution.addPropertyOverride(
-  'DistributionConfig.Origins',
-  [
-    {
-      Id: 'S3Origin',
-      DomainName: myFirstBucketS3Instance.bucketRegionalDomainName,
-      S3OriginConfig:{},
-    },
-  ]
-);
 
-cfnDistribution.addPropertyOverride('DistributionConfig.DefaultCacheBehavior.TargetOriginId', 'S3Origin');
+
+// const existingDistribution = cloudfront.Distribution.fromDistributionAttributes(
+//   myFirstBucketS3Instance.stack,
+//   'importedDistribution',
+//   {
+//     distributionId:'E3C3W1NA2C76C5',
+//     domainName:'d2xe9ks3dmropp.cloudfront.net',
+//   }
+// );
+
+// console.log(existingDistribution);
+
+// const cfnDistribution = existingDistribution.node.findChild('Resource') as cloudfront.CfnDistribution;
+
+// cfnDistribution.addPropertyOverride(
+//   'DistributionConfig.Origins',
+//   [
+//     {
+//       Id: 'S3Origin',
+//       DomainName: myFirstBucketS3Instance.bucketRegionalDomainName,
+//       S3OriginConfig:{},
+//     },
+//   ]
+// );
+
+// cfnDistribution.addPropertyOverride('DistributionConfig.DefaultCacheBehavior.TargetOriginId', 'S3Origin');
 
 
 // const distro = new cloudfront.Distribution(
